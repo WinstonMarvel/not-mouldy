@@ -7,8 +7,11 @@ cursor.execute(
     "CREATE TABLE IF NOT EXISTS humidity_data (timestamp INTEGER PRIMARY KEY, temperature REAL, humidity REAL)"
 )
 
-
-def write_to_db(entry):
+"""
+Write a single entry to the SQLite database.
+Entry is a dict with keys: timestamp, temperature, humidity
+"""
+def write_to_db(entry: Dict[str, Union[int, float]]) -> None:
     try:
         cursor.execute(
             "INSERT INTO humidity_data (timestamp, temperature, humidity) VALUES (?, ?, ?)",
