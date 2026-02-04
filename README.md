@@ -1,42 +1,69 @@
-# sv
+# 🎵 Pi Pitch Pal
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A YouTube audio extractor built with SvelteKit. Download YouTube videos, extract audio as MP3, and manage your audio library.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- 🎬 Extract audio from YouTube videos
+- 🎧 Built-in audio player
+- 📁 Audio library management
+- ⬇️ Download extracted audio files
+- 🗑️ Delete unwanted files
 
-```sh
-# create a new project
-npx sv create my-app
+## Prerequisites
+
+### yt-dlp
+
+This app requires `yt-dlp` to be installed on your system.
+
+**macOS:**
+
+```bash
+brew install yt-dlp
 ```
 
-To recreate this project with the same configuration:
+**Linux (Ubuntu/Debian):**
 
-```sh
-# recreate this project
-pnpm dlx sv create --template minimal --types ts --add prettier eslint tailwindcss="plugins:typography,forms" --install pnpm pi_pitch_pal
+```bash
+sudo add-apt-repository ppa:tomtomtom/yt-dlp
+sudo apt update
+sudo apt install yt-dlp
 ```
 
-## Developing
+**Linux (other):**
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```bash
+pip install yt-dlp
 ```
 
-## Building
+## Installation
 
-To create a production version of your app:
+```bash
+# Clone the repository
+git clone <repo-url>
+cd pi_pitch_pal
 
-```sh
-npm run build
+# Install dependencies
+pnpm install
 ```
 
-You can preview the production build with `npm run preview`.
+## Development
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+```bash
+pnpm dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## Usage
+
+1. Paste a YouTube URL into the input field
+2. Click "Extract Audio"
+3. Wait for the download to complete
+4. Play, download, or delete audio files from the library
+
+## Tech Stack
+
+- [SvelteKit](https://kit.svelte.dev/) - Full-stack framework
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) - YouTube downloader
