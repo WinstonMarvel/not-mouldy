@@ -1,14 +1,29 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
+	import AudioPlayer from '$lib/components/AudioPlayer.svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	let isLoading = $state(false);
 	let videoUrl = $state('');
 
+	// Track which file is being renamed
+	let renamingFile = $state<string | null>(null);
+	let newTitle = $state('');
+
 	// Reactive audio files from server data
 	let audioFiles = $derived(data.audioFiles);
+
+	function startRename(filename: string, currentTitle: string) {
+		renamingFile = filename;
+		newTitle = currentTitle;
+	}
+
+	function cancelRename() {
+		renamingFile = null;
+		newTitle = '';
+	}
 </script>
 
 <svelte:head>
@@ -111,63 +126,95 @@
 				{#if audioFiles.length === 0}
 					<div class="py-12 text-center text-purple-300/70">
 						<p class="text-lg">No audio files yet</p>
-						<p class="text-sm">Download your first YouTube audio above!</p>
+						<p class="text-sm">Download your first audio above!</p>
 					</div>
 				{:else}
-					<div class="space-y-4">
+					<div class="grid gap-6 md:grid-cols-2">
 						{#each audioFiles as audio (audio.filename)}
-							<div
-								class="flex flex-col gap-4 rounded-xl bg-white/5 p-4 transition hover:bg-white/10 sm:flex-row sm:items-center"
-							>
-								<!-- Audio Info -->
-								<div class="min-w-0 flex-1">
-									<h3 class="truncate font-medium text-white" title={audio.title}>
-										{audio.title}
-									</h3>
-									<p class="truncate text-sm text-purple-300/70">{audio.filename}</p>
-								</div>
+							<div class="relative">
+								<AudioPlayer src={audio.url} title={audio.title} />
 
-								<!-- Audio Player -->
-								<div class="flex-shrink-0 sm:w-64">
-									<audio controls class="h-10 w-full" preload="metadata">
-										<source src={audio.url} type="audio/mpeg" />
-										Your browser does not support the audio element.
-									</audio>
-								</div>
-
-								<!-- Actions -->
-								<div class="flex gap-2">
-									<a
-										href={audio.url}
-										download={audio.filename}
-										class="rounded-lg bg-purple-600/50 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-600"
-									>
-										⬇️ Download
-									</a>
-
+								<!-- Rename Form (shown when editing) -->
+								{#if renamingFile === audio.filename}
 									<form
 										method="POST"
-										action="?/delete"
+										action="?/rename"
+										class="mt-3"
 										use:enhance={() => {
 											return async ({ update }) => {
 												await update();
+												cancelRename();
 											};
 										}}
 									>
 										<input type="hidden" name="filename" value={audio.filename} />
+										<div class="flex gap-2">
+											<input
+												type="text"
+												name="newTitle"
+												bind:value={newTitle}
+												placeholder="Enter new title"
+												required
+												class="flex-1 rounded-lg border border-purple-500/30 bg-white/5 px-3 py-2 text-sm text-white placeholder-purple-300/50 focus:border-purple-400 focus:ring-1 focus:ring-purple-400/50 focus:outline-none"
+											/>
+											<button
+												type="submit"
+												class="cursor-pointer rounded-lg bg-green-600/50 px-3 py-2 text-sm font-medium text-white transition hover:bg-green-600"
+											>
+												✓
+											</button>
+											<button
+												type="button"
+												onclick={cancelRename}
+												class="cursor-pointer rounded-lg bg-gray-600/50 px-3 py-2 text-sm font-medium text-white transition hover:bg-gray-600"
+											>
+												✕
+											</button>
+										</div>
+									</form>
+								{:else}
+									<!-- Actions -->
+									<div class="mt-3 flex gap-2">
 										<button
-											type="submit"
-											class="cursor-pointer rounded-lg bg-red-600/50 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600"
-											onclick={(e) => {
-												if (!confirm('Are you sure you want to delete this audio file?')) {
-													e.preventDefault();
-												}
+											onclick={() => startRename(audio.filename, audio.title)}
+											class="flex-1 cursor-pointer rounded-lg bg-blue-600/50 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-blue-600"
+										>
+											✏️ Rename
+										</button>
+
+										<a
+											href={audio.url}
+											download={audio.filename}
+											class="flex-1 rounded-lg bg-purple-600/50 px-4 py-2 text-center text-sm font-medium text-white transition hover:bg-purple-600"
+										>
+											⬇️ Download
+										</a>
+
+										<form
+											method="POST"
+											action="?/delete"
+											class="flex-1"
+											use:enhance={() => {
+												return async ({ update }) => {
+													await update();
+												};
 											}}
 										>
-											🗑️ Delete
-										</button>
-									</form>
-								</div>
+											<input type="hidden" name="filename" value={audio.filename} />
+											<button
+												type="submit"
+												class="w-full cursor-pointer rounded-lg bg-red-600/50 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-600"
+												onclick={(e) => {
+													if (!confirm('Are you sure you want to delete this audio file?')) {
+														e.preventDefault();
+													}
+												}}
+											>
+												🗑️ Delete
+											</button>
+										</form>
+									</div>
+								{/if}
 							</div>
 						{/each}
 					</div>

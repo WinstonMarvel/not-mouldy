@@ -38,6 +38,7 @@
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
+		"soundtouchjs": "^0.2.1",
 		"yt-dlp-wrap": "^2.3.12"
 	}
 }

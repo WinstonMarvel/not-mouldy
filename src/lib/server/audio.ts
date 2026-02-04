@@ -129,3 +129,32 @@ export async function deleteAudioFile(filename: string): Promise<boolean> {
 		return false;
 	}
 }
+
+export async function renameAudioFile(oldFilename: string, newTitle: string): Promise<{ success: boolean; newFilename?: string; error?: string }> {
+	const { rename } = await import('fs/promises');
+	const oldPath = path.join(AUDIO_DIR, oldFilename);
+
+	if (!existsSync(oldPath)) {
+		return { success: false, error: 'File not found' };
+	}
+
+	// Extract the video ID from the old filename (last part before .mp3)
+	const videoIdMatch = oldFilename.match(/_([^_]+)\.mp3$/);
+	const videoId = videoIdMatch ? videoIdMatch[1] : Date.now().toString();
+
+	// Sanitize the new title
+	const sanitizedTitle = newTitle
+		.replace(/[^a-zA-Z0-9\s-]/g, '')
+		.replace(/\s+/g, '_')
+		.substring(0, 50);
+
+	const newFilename = `${sanitizedTitle}_${videoId}.mp3`;
+	const newPath = path.join(AUDIO_DIR, newFilename);
+
+	try {
+		await rename(oldPath, newPath);
+		return { success: true, newFilename };
+	} catch (err) {
+		return { success: false, error: err instanceof Error ? err.message : 'Failed to rename' };
+	}
+}

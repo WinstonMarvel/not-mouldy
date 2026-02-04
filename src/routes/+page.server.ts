@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import { downloadAudio, getAudioFiles, deleteAudioFile } from '$lib/server/audio';
+import { downloadAudio, getAudioFiles, deleteAudioFile, renameAudioFile } from '$lib/server/audio';
 import { fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async () => {
@@ -50,5 +50,27 @@ export const actions: Actions = {
 		}
 
 		return { success: true, message: 'File deleted successfully' };
+	},
+
+	rename: async ({ request }) => {
+		const formData = await request.formData();
+		const filename = formData.get('filename')?.toString();
+		const newTitle = formData.get('newTitle')?.toString();
+
+		if (!filename || !newTitle) {
+			return fail(400, { error: 'Filename and new title are required' });
+		}
+
+		if (newTitle.trim().length === 0) {
+			return fail(400, { error: 'Title cannot be empty' });
+		}
+
+		const result = await renameAudioFile(filename, newTitle.trim());
+
+		if (!result.success) {
+			return fail(500, { error: result.error || 'Failed to rename file' });
+		}
+
+		return { success: true, message: 'File renamed successfully' };
 	}
 };
