@@ -1,6 +1,10 @@
+import logging
 from typing import Optional, Dict, Union
 import adafruit_dht
 import board
+
+logger = logging.getLogger(__name__)
+
 
 """
 Initialize the DHT11 sensor on the specified pin.
@@ -27,5 +31,6 @@ def read_sensor(dht: adafruit_dht.DHT11) -> Optional[Dict[str, float]]:
         if temp is not None and hum is not None:
             return {"temperature": temp, "humidity": hum}
     except RuntimeError as e:
-        print("Reading error:", e)
+        # DHT11 read failures are expected noise (~30-50% of reads), not errors
+        logger.debug("Sensor read noise (expected): %s", e)
     return None

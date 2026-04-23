@@ -1,0 +1,18 @@
+services:
+  not-mouldy:
+    build: .
+    restart: unless-stopped
+    devices:
+      - /dev/gpiochip0:/dev/gpiochip0
+    volumes:
+      # SQLite DB — same path as native Grafana expects
+      - /var/lib/grafana/sqlite:/var/lib/grafana/sqlite
+      # Persistent rotating log files on the host
+      - /home/pi/not-mouldy/logs:/app/logs
+    environment:
+      LOG_DIR: /app/logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

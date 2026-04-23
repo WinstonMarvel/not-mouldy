@@ -1,12 +1,31 @@
+import logging
+import os
 import time
+from logging.handlers import RotatingFileHandler
 from typing import Dict, List, Union, Any
-import sqlite3
 import rx
 
 from rx import operators as ops
 import statistics
-from .db import write_to_db
-from .sensor import read_sensor, init_sensor
+from db import write_to_db, close_db
+from sensor import read_sensor, init_sensor
+
+LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    handlers=[
+        RotatingFileHandler(
+            os.path.join(LOG_DIR, "app.log"),
+            maxBytes=5 * 1024 * 1024,
+            backupCount=3,
+        ),
+        logging.StreamHandler(),
+    ],
+)
+logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
 
@@ -27,14 +46,17 @@ if __name__ == "__main__":
                 "humidity": statistics.mean(x["humidity"] for x in buf),
             }
         ),
-    ).subscribe(lambda entry: write_to_db(entry))
+    ).subscribe(
+        on_next=lambda entry: write_to_db(entry),
+        on_error=lambda e: logger.error("Observable stream error: %s", e),
+    )
 
-    print("Successful started humidity health score logger.")
+    logger.info("Humidity health score logger started.")
 
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("Shutting down...")
+        logger.info("Shutting down...")
         dht.exit()
-        connection.close()
+        close_db()
