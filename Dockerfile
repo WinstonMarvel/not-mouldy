@@ -7,6 +7,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# Tell adafruit-blinka to skip hardware detection and assume Raspberry Pi
+ENV BLINKA_RASPBERRY_PI=1
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
