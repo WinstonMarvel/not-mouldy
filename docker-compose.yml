@@ -8,9 +8,15 @@ services:
       # SQLite DB — same path as native Grafana expects
       - /var/lib/grafana/sqlite:/var/lib/grafana/sqlite
     environment:
-      LOG_TO_FILE: "0"
-      RETENTION_DAYS: "180"
-      SENSOR_RETRY_DELAY_SECONDS: "30"
+      LOG_TO_FILE: "${LOG_TO_FILE:-0}"
+      RETENTION_DAYS: "${RETENTION_DAYS:-180}"
+      SENSOR_RETRY_DELAY_SECONDS: "${SENSOR_RETRY_DELAY_SECONDS:-30}"
+      OUTDOOR_WEATHER_PROVIDER: "${OUTDOOR_WEATHER_PROVIDER:-open-meteo}"
+      OUTDOOR_WEATHER_LATITUDE: "${OUTDOOR_WEATHER_LATITUDE:-}"
+      OUTDOOR_WEATHER_LONGITUDE: "${OUTDOOR_WEATHER_LONGITUDE:-}"
+      OUTDOOR_WEATHER_POSTAL_CODE: "${OUTDOOR_WEATHER_POSTAL_CODE:-}"
+      OUTDOOR_WEATHER_COUNTRY_CODE: "${OUTDOOR_WEATHER_COUNTRY_CODE:-DE}"
+      OUTDOOR_WEATHER_POLL_SECONDS: "${OUTDOOR_WEATHER_POLL_SECONDS:-900}"
     logging:
       driver: json-file
       options:

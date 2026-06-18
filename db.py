@@ -1,7 +1,7 @@
 import logging
 import os
 import sqlite3
-from typing import Dict, Union
+from typing import Dict, Optional, Union
 
 logger = logging.getLogger(__name__)
 
@@ -15,8 +15,17 @@ cursor = connection.cursor()
 last_prune_day = -1
 
 cursor.execute(
-    "CREATE TABLE IF NOT EXISTS humidity_data (timestamp INTEGER PRIMARY KEY, temperature REAL, humidity REAL)"
+    "CREATE TABLE IF NOT EXISTS humidity_data (timestamp INTEGER PRIMARY KEY, temperature REAL, humidity REAL, outdoor_temperature REAL, outdoor_humidity REAL)"
 )
+
+existing_columns = {
+    row[1] for row in cursor.execute("PRAGMA table_info(humidity_data)").fetchall()
+}
+if "outdoor_temperature" not in existing_columns:
+    cursor.execute("ALTER TABLE humidity_data ADD COLUMN outdoor_temperature REAL")
+if "outdoor_humidity" not in existing_columns:
+    cursor.execute("ALTER TABLE humidity_data ADD COLUMN outdoor_humidity REAL")
+connection.commit()
 
 
 def prune_old_data(current_timestamp: int) -> None:
@@ -45,16 +54,22 @@ def prune_old_data(current_timestamp: int) -> None:
 
 """
 Write a single entry to the SQLite database.
-Entry is a dict with keys: timestamp, temperature, humidity
+Entry is a dict with keys: timestamp, temperature, humidity and optional outdoor values
 """
 
 
-def write_to_db(entry: Dict[str, Union[int, float]]) -> None:
+def write_to_db(entry: Dict[str, Union[int, float, None]]) -> None:
     try:
         prune_old_data(int(entry["timestamp"]))
         cursor.execute(
-            "INSERT INTO humidity_data (timestamp, temperature, humidity) VALUES (?, ?, ?)",
-            (entry["timestamp"], entry["temperature"], entry["humidity"]),
+            "INSERT INTO humidity_data (timestamp, temperature, humidity, outdoor_temperature, outdoor_humidity) VALUES (?, ?, ?, ?, ?)",
+            (
+                entry["timestamp"],
+                entry["temperature"],
+                entry["humidity"],
+                entry.get("outdoor_temperature"),
+                entry.get("outdoor_humidity"),
+            ),
         )
         connection.commit()
     except Exception as e:

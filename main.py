@@ -8,6 +8,7 @@ from rx import operators as ops
 import statistics
 from db import write_to_db, close_db
 from sensor import read_sensor, init_sensor
+from weather import OutdoorWeatherClient
 
 LOG_DIR = os.environ.get("LOG_DIR", "/app/logs")
 LOG_TO_FILE = os.environ.get("LOG_TO_FILE", "0") == "1"
@@ -47,6 +48,7 @@ def wait_for_sensor():
 if __name__ == "__main__":
 
     dht = wait_for_sensor()
+    outdoor_weather = OutdoorWeatherClient()
     source = rx.interval(15).pipe(
         ops.map(lambda _: read_sensor(dht)), ops.filter(lambda x: x is not None)
     )
@@ -61,6 +63,7 @@ if __name__ == "__main__":
                 ),  # // Floor division for 3 min interval start
                 "temperature": statistics.mean(x["temperature"] for x in buf),
                 "humidity": statistics.mean(x["humidity"] for x in buf),
+                **(outdoor_weather.get_current_reading() or {}),
             }
         ),
     ).subscribe(
