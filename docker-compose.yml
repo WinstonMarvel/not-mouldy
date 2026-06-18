@@ -8,6 +8,7 @@ services:
       # SQLite DB — same path as native Grafana expects
       - /var/lib/grafana/sqlite:/var/lib/grafana/sqlite
     environment:
+      BLINKA_RASPBERRY_PI: "1"
       LOG_TO_FILE: "${LOG_TO_FILE:-0}"
       RETENTION_DAYS: "${RETENTION_DAYS:-180}"
       SENSOR_RETRY_DELAY_SECONDS: "${SENSOR_RETRY_DELAY_SECONDS:-30}"
