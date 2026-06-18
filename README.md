@@ -54,3 +54,35 @@ sudo systemctl restart grafana-server
 Grafana will be available at `http://raspberrypi.local:3000` (default credentials: admin/admin).
 
 Import `grafana-dashboard.json`.
+
+## Run as System Service
+
+1. Create the service file on the Pi: `sudo nano /etc/systemd/system/not-mouldy.service`
+
+````bash
+[Unit]
+Description=Not Mouldy humidity monitor
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/pi/not-mouldy
+ExecStart=/bin/bash run.sh
+ExecStop=/usr/bin/docker compose down
+User=pi
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target```
+
+2. Enable and start it:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable not-mouldy.service
+sudo systemctl start not-mouldy.service```
+
+3. Check status: `sudo systemctl status not-mouldy.service`
+````
