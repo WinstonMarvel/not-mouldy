@@ -16,7 +16,9 @@ pip install -r requirements.txt
 ./run.sh
 ```
 
-The script will run in the background using nohup, continuously monitoring temperature and humidity, averaging readings every 3 minutes and storing them in `climate.db`.
+This starts the Docker Compose stack in the background. The sensor process reads every 15 seconds, stores 3-minute averages in `/var/lib/grafana/sqlite/humidity.db`, and restarts automatically if the container exits.
+
+The Docker deployment keeps only `180` days of readings by default and retries sensor initialization every `30` seconds instead of crash-looping if GPIO or the sensor is temporarily unavailable. Container logs are retained through Docker's capped log driver; file logging is still supported, but now opt-in via `LOG_TO_FILE=1`.
 
 ## Grafana Setup
 
