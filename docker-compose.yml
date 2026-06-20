@@ -7,8 +7,10 @@ services:
     volumes:
       # SQLite DB — same path as native Grafana expects
       - /var/lib/grafana/sqlite:/var/lib/grafana/sqlite
+      # Device tree — adafruit-blinka needs this to detect the Pi model.
+      # On 64-bit Raspberry Pi OS the chip/board info is NOT in /proc/cpuinfo.
+      - /proc/device-tree:/proc/device-tree:ro
     environment:
-      BLINKA_RASPBERRY_PI: "1"
       LOG_TO_FILE: "${LOG_TO_FILE:-0}"
       RETENTION_DAYS: "${RETENTION_DAYS:-180}"
       SENSOR_RETRY_DELAY_SECONDS: "${SENSOR_RETRY_DELAY_SECONDS:-30}"
