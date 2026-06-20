@@ -109,10 +109,24 @@
             "type": "frser-sqlite-datasource",
             "uid": "ffac81r6t9d6oc"
           },
-          "queryText": "SELECT\n  timestamp AS time,\n  temperature\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
+          "queryText": "SELECT\n  timestamp AS time,\n  temperature AS \"Indoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
           "queryType": "table",
-          "rawQueryText": "SELECT\n  timestamp AS time,\n  temperature\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
+          "rawQueryText": "SELECT\n  timestamp AS time,\n  temperature AS \"Indoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
           "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ]
+        },
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ffac81r6t9d6oc"
+          },
+          "queryText": "SELECT\n  timestamp AS time,\n  outdoor_temperature AS \"Outdoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\n  AND outdoor_temperature IS NOT NULL\nORDER BY timestamp ASC\n",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp AS time,\n  outdoor_temperature AS \"Outdoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\n  AND outdoor_temperature IS NOT NULL\nORDER BY timestamp ASC\n",
+          "refId": "B",
           "timeColumns": [
             "time",
             "ts"
@@ -210,10 +224,24 @@
             "type": "frser-sqlite-datasource",
             "uid": "ffac81r6t9d6oc"
           },
-          "queryText": "SELECT\n  timestamp AS time,\n  humidity\nFROM humidity_data\nWHERE timestamp >= 1768563885306/1000 AND timestamp <= 1768585485306/1000\nORDER BY timestamp ASC\n",
+          "queryText": "SELECT\n  timestamp AS time,\n  humidity AS \"Indoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
           "queryType": "table",
-          "rawQueryText": "SELECT\n  timestamp AS time,\n  humidity\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
+          "rawQueryText": "SELECT\n  timestamp AS time,\n  humidity AS \"Indoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\nORDER BY timestamp ASC\n",
           "refId": "A",
+          "timeColumns": [
+            "time",
+            "ts"
+          ]
+        },
+        {
+          "datasource": {
+            "type": "frser-sqlite-datasource",
+            "uid": "ffac81r6t9d6oc"
+          },
+          "queryText": "SELECT\n  timestamp AS time,\n  outdoor_humidity AS \"Outdoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\n  AND outdoor_humidity IS NOT NULL\nORDER BY timestamp ASC\n",
+          "queryType": "table",
+          "rawQueryText": "SELECT\n  timestamp AS time,\n  outdoor_humidity AS \"Outdoor\"\nFROM humidity_data\nWHERE timestamp >= $__from/1000 AND timestamp <= $__to/1000\n  AND outdoor_humidity IS NOT NULL\nORDER BY timestamp ASC\n",
+          "refId": "B",
           "timeColumns": [
             "time",
             "ts"

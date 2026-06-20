@@ -1,0 +1,36 @@
+# Keep the build context and image small, and keep secrets out of the image.
+
+.git
+.gitignore
+.dockerignore
+
+# Local secrets / config — must NOT be baked into the image
+
+.env
+.env.template
+
+# Python caches
+
+**pycache**/
+_.py[cod]
+_.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Editor / OS
+
+.editorconfig
+.vscode/
+.DS_Store
+
+# Project files not needed at runtime
+
+README.md
+Makefile
+grafana-dashboard.json
+test_sensor.py
+
+# Local data / logs
+
+\*.db
+logs/
