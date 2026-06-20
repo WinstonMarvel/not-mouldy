@@ -11,6 +11,10 @@ services:
       # On 64-bit Raspberry Pi OS the chip/board info is NOT in /proc/cpuinfo.
       - /proc/device-tree:/proc/device-tree:ro
     environment:
+      # Force adafruit-blinka's board detection (values from native test_sensor.py).
+      # Avoids relying on /proc/device-tree being readable inside the container.
+      BLINKA_FORCECHIP: "BCM2XXX"
+      BLINKA_FORCEBOARD: "RASPBERRY_PI_3B_PLUS"
       LOG_TO_FILE: "${LOG_TO_FILE:-0}"
       RETENTION_DAYS: "${RETENTION_DAYS:-180}"
       SENSOR_RETRY_DELAY_SECONDS: "${SENSOR_RETRY_DELAY_SECONDS:-30}"
