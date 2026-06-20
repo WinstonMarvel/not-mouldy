@@ -11,4 +11,4 @@ logs:
 
 update:
 	git pull
-	DOCKER_BUILDKIT=1 docker compose up -d --buil
+	DOCKER_BUILDKIT=1 docker compose up -d --build
