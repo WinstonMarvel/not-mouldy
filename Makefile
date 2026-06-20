@@ -1,7 +1,7 @@
 .PHONY: up down logs update
 
 up:
-	docker compose up -d --build
+	DOCKER_BUILDKIT=1 docker compose up -d --build
 
 down:
 	docker compose down
@@ -11,4 +11,4 @@ logs:
 
 update:
 	git pull
-	docker compose up -d --build
+	DOCKER_BUILDKIT=1 docker compose up -d --buil
