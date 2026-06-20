@@ -1,3 +1,5 @@
 adafruit_blinka==8.69.0
 adafruit_circuitpython_dht==4.0.10
+# Drop-in RPi.GPIO replacement (lgpio-backed); works on Bookworm kernels via /dev/gpiochip0
+rpi-lgpio==0.6
 Rx==3.2.0
