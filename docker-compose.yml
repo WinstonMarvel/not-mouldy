@@ -27,6 +27,10 @@ services:
       # Home Assistant integration
       HA_URL: "${HA_URL:-}"
       HA_TOKEN: "${HA_TOKEN:-}"
+    # Share the host network stack so the container can reach services on the Pi
+    # (e.g. Home Assistant at localhost:8123) without mDNS/.local resolution,
+    # which doesn't work in Docker bridge networking.
+    network_mode: host
     logging:
       driver: json-file
       options:

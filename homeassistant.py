@@ -11,6 +11,15 @@ HA_URL = os.environ.get("HA_URL", "").rstrip("/")
 HA_TOKEN = os.environ.get("HA_TOKEN", "")
 HA_ENABLED = bool(HA_URL and HA_TOKEN)
 
+if HA_ENABLED:
+    logger.info("Home Assistant integration enabled: pushing to %s", HA_URL)
+else:
+    logger.warning(
+        "Home Assistant integration DISABLED (HA_URL=%r, HA_TOKEN=%s)",
+        HA_URL,
+        "set" if HA_TOKEN else "missing",
+    )
+
 
 def _push_state(entity_id: str, state: str, attributes: dict) -> None:
     url = f"{HA_URL}/api/states/{entity_id}"
@@ -61,6 +70,10 @@ def push_indoor_reading(temperature: float, humidity: float) -> None:
             humidity,
         )
     except urllib.error.URLError as exc:
-        logger.warning("Home Assistant push failed (network): %s", exc)
+        logger.error(
+            "Home Assistant push failed (network) — check HA_URL=%r is reachable: %s",
+            HA_URL,
+            exc,
+        )
     except Exception as exc:
-        logger.warning("Home Assistant push failed: %s", exc)
+        logger.error("Home Assistant push failed: %s", exc, exc_info=True)
