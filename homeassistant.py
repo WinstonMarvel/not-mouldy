@@ -77,3 +77,44 @@ def push_indoor_reading(temperature: float, humidity: float) -> None:
         )
     except Exception as exc:
         logger.error("Home Assistant push failed: %s", exc, exc_info=True)
+
+
+def push_outdoor_reading(temperature: float, humidity: float) -> None:
+    """Push outdoor temperature and humidity to Home Assistant as sensor states."""
+    if not HA_ENABLED:
+        return
+
+    try:
+        _push_state(
+            "sensor.not_mouldy_outdoor_temperature",
+            f"{temperature:.1f}",
+            {
+                "unit_of_measurement": "°C",
+                "friendly_name": "Outdoor Temperature",
+                "device_class": "temperature",
+                "state_class": "measurement",
+            },
+        )
+        _push_state(
+            "sensor.not_mouldy_outdoor_humidity",
+            f"{humidity:.1f}",
+            {
+                "unit_of_measurement": "%",
+                "friendly_name": "Outdoor Humidity",
+                "device_class": "humidity",
+                "state_class": "measurement",
+            },
+        )
+        logger.debug(
+            "Pushed to Home Assistant: outdoor temp=%.1f°C outdoor humidity=%.1f%%",
+            temperature,
+            humidity,
+        )
+    except urllib.error.URLError as exc:
+        logger.error(
+            "Home Assistant push failed (network) — check HA_URL=%r is reachable: %s",
+            HA_URL,
+            exc,
+        )
+    except Exception as exc:
+        logger.error("Home Assistant push failed: %s", exc, exc_info=True)

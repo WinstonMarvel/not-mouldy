@@ -7,7 +7,7 @@ import rx
 from rx import operators as ops
 import statistics
 from db import write_to_db, close_db
-from homeassistant import push_indoor_reading
+from homeassistant import push_indoor_reading, push_outdoor_reading
 from sensor import read_sensor, init_sensor
 from weather import OutdoorWeatherClient
 
@@ -71,6 +71,9 @@ if __name__ == "__main__":
         on_next=lambda entry: (
             write_to_db(entry),
             push_indoor_reading(entry["temperature"], entry["humidity"]),
+            push_outdoor_reading(entry["outdoor_temperature"], entry["outdoor_humidity"])
+            if "outdoor_temperature" in entry
+            else None,
         ),
         on_error=lambda e: logger.error("Observable stream error: %s", e),
     )
